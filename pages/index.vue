@@ -1,6 +1,5 @@
 <template>
   <div>
-    Index
-    <hello-world></hello-world>
+    <WrapperLogin />
   </div>
 </template>

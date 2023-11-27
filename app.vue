@@ -10,6 +10,8 @@
 
   * {
     font-family: 'Comfortaa', cursive;
+    /* background: #f2f2f2; */
   }
+  /* #00B8C5 */
 </style>
 
