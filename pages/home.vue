@@ -1,6 +1,7 @@
 <template>
   <header-component
     @goto="gotohome"
+    @gotoprofile="changeContent(4)"
     :title="showList ? 'Seus pets': showRegister ? 'Novo pet' : 'Detalhes'"
   ></header-component>
   <div class="w-full">
@@ -60,13 +61,13 @@
                       <v-icon
                         style="font-size: 20px;"
                         color="grey"
-                      >mdi-eye</v-icon>
+                      >mdi-eye-outline</v-icon>
                     </div>
                     <div
                       class="pa-1 px-2 border rounded-lg flex items-center cursor-pointer"
                       @click="openModalDelete(pet)"
                     >
-                      <v-icon color="red" style="font-size: 20px">mdi-delete</v-icon>
+                      <v-icon color="red" style="font-size: 20px">mdi-delete-outline</v-icon>
                     </div>
                   </div>
                 </div>
@@ -85,6 +86,11 @@
               @backToHome="changeView"
               :petData="petDetailsToEvent"
             ></view-pet>
+          </div>
+
+          <!-- Profile -->
+          <div v-if="showProfile">
+            <view-profile></view-profile>
           </div>
 
           <div class="flex items-center">
@@ -145,6 +151,7 @@ const { getLists, getPet, removePet } = usePetsStore()
 const showList = ref(true)
 const showRegister = ref(false)
 const showViewDetails = ref(false)
+const showProfile = ref(false)
 const petDetailsToEvent = ref(null)
 
 // open modal to confirm delete
@@ -219,6 +226,7 @@ const changeContent = (index) => {
   showList.value = index === 1
   showRegister.value = index === 2
   showViewDetails.value = index === 3
+  showProfile.value = index === 4
 }
 
 // Metodo controlador de view, o index determina qual pagina vai ser renderizada

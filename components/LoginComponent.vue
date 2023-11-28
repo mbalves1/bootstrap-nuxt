@@ -63,7 +63,7 @@
                 <p class="text-#00B8C5 font-bold">Esqueceu sua senha?</p>
               </span>
   
-              <div class="mt-5">
+              <div class="mt-5 mb-9">
                 <v-btn
                   variant="flat"
                   class="w-100% text-capitalize"
@@ -128,6 +128,7 @@ const loginWithEmailAndPass = async () => {
       const response = await loginIn(payload)
       loading.value = false
       router.push("/home")
+      localStorage.setItem('user', JSON.stringify(response.data.user))
       return response
     }
     catch(error) {

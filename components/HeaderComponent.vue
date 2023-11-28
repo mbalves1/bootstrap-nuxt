@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <div class>
+      <div @click="goToProfile" class="cursor-pointer">
         <div class="rounded-1/2 bg-#f2f2f2 text-sx pa-5">AM</div>
       </div>
     </div>
@@ -27,7 +27,7 @@ definePageMeta({
   layout: 'home'
 })
 
-const emit = defineEmits(['goto'])
+const emit = defineEmits(['goto', 'gotoprofile'])
 
 const props = defineProps({
   title: {
@@ -38,5 +38,9 @@ const props = defineProps({
 
 const gotohome = () => {
   emit('goto', true)
+}
+
+const goToProfile = () => {
+  emit('gotoprofile', true)
 }
 </script>
