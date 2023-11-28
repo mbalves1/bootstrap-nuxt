@@ -1,4 +1,11 @@
 <template>
+  <v-snackbar
+    :timeout="3000"
+    :color="snackbar.color"
+    v-model="snackbar.visible"
+  >
+    {{ snackbar.label }}
+  </v-snackbar>
   <v-row class="w-full sm:w-700px">
     <v-col>
       <div>
@@ -49,7 +56,7 @@
                   required
                   type="number"
                   :rules="[v => !!v || 'O CPF é obrigatório!', rules.cpf]"
-                  v-model="newUser.cpf"
+                  v-model="newUser.document"
                   ></v-text-field>
                 </v-col>
                 <v-col>
@@ -63,7 +70,7 @@
                     type="number"
                     v-mask="'(##) #####-####'"
                     :rules="[v => !!v || 'O telefone é obrigatório!']"
-                    v-model="newUser.telefone"
+                    v-model="newUser.phone_number"
                     ></v-text-field>
                 </v-col>
               </v-row>
@@ -80,7 +87,10 @@
                   @click:append-inner="show1 = !show1"
                   placeholder="Crie uma senha"
                   required
-                  :rules="[v => !!v || 'A senha é obrigatório!']"
+                  :rules="[
+                    v => !!v || 'A senha é obrigatório!',
+                    rules.password
+                  ]"
                   v-model="newUser.password"
                   ></v-text-field>
                 </v-col>
@@ -98,7 +108,7 @@
                     :rules="[
                       v => !!v || 'O nome é obrigatório!',
                       v => v === newUser.password || 'A senha não confere!' ]"
-                    v-model="newUser.confirmPassword"
+                    v-model="newUser.password_confirmation"
                   ></v-text-field>
                 </v-col>
             </v-row>
@@ -108,7 +118,8 @@
               color="#00B8C5"
               required
               :rules="[v => !!v || 'O aceite de termos é obrigatória']"
-              class="sm:w-700px" 
+              class="sm:w-700px"
+              v-model="newUser.terms"
             >
               <template #label>
                 <span class="sm:w-700px text-sm cursor-pointer" @click="openTerms = !openTerms">Li e concordo com os <span class="text-#00B8C5 underline underline-offset-3 font-bold">Termos de uso</span> e a <span class="text-#00B8C5 underline underline-offset-3 font-bold">Política de privacidade</span> do sistema.</span>
@@ -121,6 +132,7 @@
                 class="w-full text-white text-capitalize"
                 color="#00B8C5"
                 @click="register"
+                :loading="loading"
               >
                 <div style="">
                   Criar conta
@@ -134,35 +146,51 @@
   </v-row>
 </template>
 <script setup>
+// Layout page
 definePageMeta({
   layout: 'layoutPattern'
 })
+
+// Pinia
+const { createRegister } = useAuthStore()
+
+// variables
 const emit = defineEmits(['register-user'])
 const formRegister = ref(null)
 const show1 = ref(false)
 const show2 = ref(false)
+const loading = ref(false)
 const rules = ref({
   email: value => {
     const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return pattern.test(value) || 'E-mail inválido!.'
-    },
+  },
     cpf: value => {
-const pattern = /^[0-9]{11}$/
-return pattern.test(value) || 'Invalid CPF.'
+    const pattern = /^[0-9]{11}$/
+    return pattern.test(value) || 'Invalid CPF.'
   },
   name: value => {
     const pattern = /^[\wà-ü']{2,}(\s+[\wà-ü']{2,})+$/
     return pattern.test(value) || 'Nome deve ter pelo menos dois nomes.'
-  }
+  },
+  password: value => {
+    return value.length >= 8 || 'A senha deve ter pelo menos 8 caracteres!'
+  },
+})
+
+const snackbar = ref({
+  visible: false,
+  label: '',
+  color: ''
 })
 
 const newUser = ref({
   name: '',
   email: '',
-  cpf: '',
-  telefone: '',
+  document: '',
+  phone_number: '',
   password: '',
-  confirmPassword: '',
+  password_confirmation: '',
   terms: false
 })
 
@@ -172,9 +200,27 @@ const goToLogin = () => {
 
 const register = async () => {
   const { valid } = await formRegister.value.validate()
-  console.log("valid", valid)
+  const payload = {
+    ...newUser.value,
+    phone_number: 55 + newUser.value.phone_number
+  }
   if (valid) {
-    console.log("opa", newUser.value)
+    loading.value = true
+    try {
+      const response = await createRegister(payload)
+      loading.value = false
+      snackbar.value.visible = true
+      snackbar.value.label = 'Usuário criado com sucesso!'
+      snackbar.value.color = '#00B8C5'
+      return response
+    }
+    catch(error) {
+      loading.value = false
+      snackbar.value.visible = true
+      snackbar.value.label = 'Erro ao criar usuário!'
+      snackbar.value.color = 'red'
+      console.error(error)
+    }
   }
 }
 </script>

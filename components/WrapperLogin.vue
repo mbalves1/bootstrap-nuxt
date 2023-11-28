@@ -9,7 +9,6 @@
 <script setup>
 const show = ref(true)
 const showPage = (params) => {
-  console.log('oparams', params)
   show.value = params
 }
 </script>

@@ -1,0 +1,1 @@
+export const URL_BASE = 'https://api.bitzen-pet.homologacao.bitzenwebsites.net/api/';

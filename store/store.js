@@ -6,7 +6,6 @@ export const useStore = defineStore('user', {
   }),
   actions: {
     aquiUser() {
-      console.log('Aqui')
       return this.user
     }
   }
