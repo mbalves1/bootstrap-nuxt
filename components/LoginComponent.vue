@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 sm:ml-10">
     <v-row>
       <v-col>
-        <div class="bg-white w-500px h-500px rounded-lg px-10">
+        <div class="bg-white w-500px h-auto rounded-lg px-10 pb-5">
           <div class="flex align-center py-10 bg-white rounded-lg">
             <img src="/petlogo.png" class="w-50px"/>
             <div class="font-bold bg-white">

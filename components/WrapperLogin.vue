@@ -1,7 +1,9 @@
 <template>
   <div>
-    <LoginComponent @register-user="showPage" v-if="show"></LoginComponent>
-    <RegisterUser @login-page="showPage" v-else></RegisterUser>
+    <v-slide-y-reverse-transition hide-on-leave>
+      <LoginComponent @register-user="showPage" v-if="show"></LoginComponent>
+      <RegisterUser @login-page="showPage" v-else></RegisterUser>
+    </v-slide-y-reverse-transition>
   </div>
 </template>
 <script setup>
