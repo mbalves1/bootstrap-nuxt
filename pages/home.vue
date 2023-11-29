@@ -1,4 +1,11 @@
 <template>
+  <v-snackbar
+    :timeout="time"
+    :color="snackbar.color"
+    v-model="snackbar.visible"
+  >
+    {{ snackbar.label }}
+  </v-snackbar>
   <header-component
     @goto="gotohome"
     @gotoprofile="changeContent(4)"
@@ -86,6 +93,7 @@
             <view-pet
               @backToHome="changeView"
               :petData="petDetailsToEvent"
+              @send-notification-success="notification"
             ></view-pet>
           </div>
 
@@ -183,6 +191,13 @@ const gotohome = () => {
   changeView(1)
 }
 
+const snackbar = ref({
+  visible: false,
+  label: '',
+  color: '',
+  time: 4000
+})
+
 const fecthPet = async () => {
   const arr = dataPet.value
   const arry = arr.map(({id}) => {
@@ -233,6 +248,17 @@ const changeContent = (index) => {
 // Metodo controlador de view, o index determina qual pagina vai ser renderizada
 const changeView = index => {
   changeContent(index)
+}
+
+// Metodo snacbar mensagem
+const notification = item => {
+  console.log(item)
+  const { color, visible, label } = item
+  snackbar.value = {
+    color,
+    visible,
+    label
+  }
 }
 
 const deletePetConfirm = async () => {

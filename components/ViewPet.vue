@@ -118,7 +118,7 @@
   </v-row>
 </template>
 <script setup>
-const emit = defineEmits(['backToHome'])
+const emit = defineEmits(['backToHome', 'sendNotificationSuccess'])
 const props = defineProps({
   petData: {
     type: Object,
@@ -158,6 +158,11 @@ const sendEdit = async () => {
     loading.value = true
     try {
       const response = await updatePet(petInfoToEdit.value)
+      emit('sendNotificationSuccess', {
+        visible: true,
+        label: 'Pet editado com sucesso!',
+        color: '#00B8C5'
+      })
       details.value = true
       loading.value = false
       return response

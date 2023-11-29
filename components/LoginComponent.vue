@@ -6,7 +6,7 @@
   >
     {{ snackbar.label }}
   </v-snackbar>
-  <!-- <div class="flex items-center justify-center"></div> -->
+
   <div class="grid grid-cols-2 sm:ml-10">
     <v-row>
       <v-col>
