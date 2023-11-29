@@ -23,13 +23,22 @@ export async function getPet(id, token) {
 }
 
 export async function postPet(payload, token) {
+  const formData = new FormData()
+  const filteredPayload = payload.image
+  formData.appendFile('blob', filteredPayload)
+  const dataPayload = {
+    ...payload,
+    image: formData
+  }
+  console.log("payload", formData)
+
   const response = await fetch(`${URL_BASE}pets`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(dataPayload),
   });
   return response;
 }

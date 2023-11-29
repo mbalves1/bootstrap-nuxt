@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main class="" style="background: #f2f2f2 mporta !important">
+    <v-main style="background: #f2f2f2 mporta !important">
       <slot></slot>
     </v-main>
   </v-app>

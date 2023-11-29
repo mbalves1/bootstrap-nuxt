@@ -12,7 +12,7 @@
     :title="
       showList ? 'Seus pets': showRegister ? 'Novo pet' : showProfile ? 'Meu perfil' : 'Detalhes'"
   ></header-component>
-  <div class="w-full">
+    <div class="w-full bg-#f2f2f2">
       <div class="w-100 bg-#f2f2f2 h-100vh">
         <v-container v-if="showList" class="flex justify-between">
           <div class="flex w-345px mt-3 mb-2">
@@ -84,12 +84,12 @@
           </div>
 
           <!-- Cadastrar -->
-          <div v-if="showRegister" class="mt-8">
+          <div v-if="showRegister" class="mt-8" style="height: 100vh;">
             <register-pet></register-pet>
           </div>
 
           <!-- Ver detalhes -->
-          <div v-if="showViewDetails">
+          <div v-if="showViewDetails" style="height: 100vh;">
             <view-pet
               @backToHome="changeView"
               :petData="petDetailsToEvent"
@@ -98,7 +98,7 @@
           </div>
 
           <!-- Profile -->
-          <div v-if="showProfile">
+          <div v-if="showProfile" style="height: 100vh;">
             <view-profile></view-profile>
           </div>
 
@@ -198,14 +198,16 @@ const snackbar = ref({
   time: 4000
 })
 
+// Esse metodo tem como objetivo criar um novo metodo para bater individualmente no endpoint por id, assim buscando as indormações de idade e cor que não vem no endpoit onde lista todos os pets
 const fecthPet = async () => {
-  const arr = dataPet.value
-  const arry = arr.map(({id}) => {
+  const dataPetArray = dataPet.value
+  const arrayPetId = dataPetArray.map(({id}) => {
     return id
   })
 
-  const mountArray = await Promise.all(arry.map(id => getPet(id)))
+  const mountArray = await Promise.all(arrayPetId.map(id => getPet(id)))
 
+  array.value = []
   return mountArray.map(i => {
     array.value.push(i.data)
   })
@@ -252,7 +254,6 @@ const changeView = index => {
 
 // Metodo snacbar mensagem
 const notification = item => {
-  console.log(item)
   const { color, visible, label } = item
   snackbar.value = {
     color,
@@ -266,6 +267,7 @@ const deletePetConfirm = async () => {
   try {
     loading.value= true
     const response = await removePet(id)
+    await fecthPetData()
     openDeleteItem.value = false
     loading.value= false
 

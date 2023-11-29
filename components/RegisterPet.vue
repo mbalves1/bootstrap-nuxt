@@ -9,17 +9,14 @@
   <v-form ref="createFormRef">
     <v-row class="">
       <v-col class="pt-0" cols="12" lg="3">
-        <div class="border-dashed w-full h-250px rounded text-grey">
+        <div class="border-dashed w-full rounded text-grey">
           <v-file-input
             prepend-icon="mdi-camera"
-            class=""
             show-size
             variant="outline"
             type="file"
-            style="height: 500px;"
             accept="image/jpg, image/jpeg, image/png"
             required
-            v-model="newPet.image"
             :rules="[v => !!v || 'A imagem é obrigatória!']"
             @change="handleFile"
           ></v-file-input>
@@ -118,8 +115,8 @@ const sendRegister = async () => {
   const { valid } = await createFormRef.value.validate()
   if (valid) {    
     let formData = new FormData()
-    const imageFile = inputFile.value// Get the file object
-    const imageBlob = new Blob([imageFile], { type: imageFile.type }) // Create a Blob object from the file object
+    const imageFile = inputFile.value
+    const imageBlob = new Blob([imageFile], { type: imageFile.type })
     formData.append('image', imageBlob)
     const imgFile = formData.get('image')
     loading.value = true
@@ -128,10 +125,10 @@ const sendRegister = async () => {
       ...newPet.value,
       image: imgFile
     }
+
     try {
       const response = await createPet(payload)
       if (response.status === 422) {
-        console.log(response)
         loading.value = false
         snackbar.value ={
           visible: true,
@@ -140,7 +137,6 @@ const sendRegister = async () => {
         }
       } else {
         loading.value = false
-        console.log(response.message)
       }
       return response
     }
