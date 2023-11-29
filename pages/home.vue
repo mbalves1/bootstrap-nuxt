@@ -2,7 +2,8 @@
   <header-component
     @goto="gotohome"
     @gotoprofile="changeContent(4)"
-    :title="showList ? 'Seus pets': showRegister ? 'Novo pet' : 'Detalhes'"
+    :title="
+      showList ? 'Seus pets': showRegister ? 'Novo pet' : showProfile ? 'Meu perfil' : 'Detalhes'"
   ></header-component>
   <div class="w-full">
       <div class="w-100 bg-#f2f2f2 h-100vh">

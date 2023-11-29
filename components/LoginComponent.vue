@@ -52,6 +52,9 @@
                 variant="outlined"
                 style="background-color: white;"
                 placeholder="Sua senha"
+                :type="show1 ? 'text' : 'password'"
+                :append-inner-icon="show1 ? 'mdi-eye-off' : 'mdi-eye'"
+                @click:append-inner="show1 = !show1"
                 required
                 :rules="[v => !!v || 'A senha é obrigatório!', rules.password]"
                 v-model="userInfo.password"
@@ -90,6 +93,7 @@ const emit = defineEmits(['register-user'])
 const router = useRouter()
 
 // Variables
+const show1 = ref(false)
 const loginFormRef = ref(null)
 const loading = ref(false)
 const rules = ref({

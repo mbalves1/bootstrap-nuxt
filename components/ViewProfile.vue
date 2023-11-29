@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="flex justify-between bg-white border rounded-lg sm:w-500px mt-7 pa-6">
+    <div class="flex justify-between bg-white border rounded-lg sm:w-500px mt-7 pa-6 cursor-pointer" @click="logout">
       <div class="flex items-center text-red">
         <v-icon class="flex mr-2" style="transform: rotate(180deg);">mdi-login</v-icon>
         <div class="font-bold text-red">Sair da minha conta</div>
@@ -46,14 +46,27 @@
   </div>
 </template>
 <script setup>
+const router = useRouter()
+const { getUserData } = useUserStore()
+
 const user = ref({
   name: '',
   email: ''
 })
 
-onMounted(() => {
+onMounted( async () => {
   const userStore = JSON.parse(localStorage.getItem('user'))
   user.value.name = userStore.name
   user.value.email = userStore.email
+
+  const data = await getUserData()
+  console.table(data.data)
+  
 })
+
+const logout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  router.push("/")
+}
 </script>

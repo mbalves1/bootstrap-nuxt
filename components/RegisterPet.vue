@@ -1,11 +1,11 @@
 <template>
-  <!-- <v-snackbar
-    :timeout="3000"
+  <v-snackbar
+    :timeout="time"
     :color="snackbar.color"
     v-model="snackbar.visible"
   >
     {{ snackbar.label }}
-  </v-snackbar> -->
+  </v-snackbar>
   <v-form ref="createFormRef">
     <v-row class="">
       <v-col class="pt-0" cols="12" lg="3">
@@ -13,6 +13,7 @@
           <v-file-input
             prepend-icon="mdi-camera"
             class=""
+            show-size
             variant="outline"
             type="file"
             style="height: 500px;"
@@ -20,11 +21,11 @@
             required
             v-model="newPet.image"
             :rules="[v => !!v || 'A imagem é obrigatória!']"
-            @change="handleFileInput"
+            @change="handleFile"
           ></v-file-input>
         </div>
       </v-col>
-      <v-col cols="12"  lg="9" class="pt-0">
+      <v-col cols="12" lg="9" class="pt-0">
         <div class="border bg-white rounded-lg pl-5  py-5">
           <v-col cols="12" lg="6">
             <div class="text-sm mb-2 font-bold">Nome</div>
@@ -92,6 +93,7 @@ const { createPet } = usePetsStore()
 
 const loading = ref(false)
 const createFormRef = ref(null)
+const inputFile = ref()
 
 const newPet = ref({
   name: '',
@@ -101,44 +103,51 @@ const newPet = ref({
   image: ''
 })
 
-// const snackbar = ref({
-//   color: '',
-//   visible: '',
-//   label: ''
-// })
+const snackbar = ref({
+  visible: false,
+  label: '',
+  color: '',
+  time: 11000
+})
 
-const im = ref()
-
-const handleFileInput = event => {
-  console.log("event1")
-  console.log("event", event.target.files)
-  im.value = event.target.files[0]
+const handleFile = (item) => {
+  inputFile.value = item.target.files[0]
 }
 
 const sendRegister = async () => {
-  // snackbar.value.visible = false
-  const { valid } = createFormRef.value.validate()
-  if (valid) {
+  const { valid } = await createFormRef.value.validate()
+  if (valid) {    
+    let formData = new FormData()
+    const imageFile = inputFile.value// Get the file object
+    const imageBlob = new Blob([imageFile], { type: imageFile.type }) // Create a Blob object from the file object
+    formData.append('image', imageBlob)
+    const imgFile = formData.get('image')
+    loading.value = true
+    
+    const payload = {
+      ...newPet.value,
+      image: imgFile
+    }
     try {
-      loading.value = true 
-
-      const fd = new FormData()
-      fd.append('image', im.value)
-      console.log("fd", fd)
-      const payload = {
-        ...newPet.value,
-        image: fd
+      const response = await createPet(payload)
+      if (response.status === 422) {
+        console.log(response)
+        loading.value = false
+        snackbar.value ={
+          visible: true,
+          label: 'Os dados fornecidos são inválidos. Por favor, tente novamente!',
+          color: 'red',
+        }
+      } else {
+        loading.value = false
+        console.log(response.message)
       }
-      console.log("payload", payload)
-      await createPet(payload)
+      return response
     }
     catch (error) {
+      loading.value = false
       console.error(error)
     }
-  // } else {
-  //   snackbar.value.visible = true
-  //   snackbar.value.label = 'Erro ao criar cadastro!'
-  //   snackbar.value.color = 'red'
   }
 }
 

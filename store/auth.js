@@ -11,8 +11,8 @@ export const useAuthStore = defineStore('authentication', {
     async createRegister(payload) {
       try {
         const response = await postResgister(payload)
-        const data = await response.json()        
-        return data
+        
+        return response
       } catch (error) {
         this.msg = 'Error while registering user'
       }

@@ -1,6 +1,6 @@
 <template>
   <v-snackbar
-    :timeout="3000"
+    :timeout="time"
     :color="snackbar.color"
     v-model="snackbar.visible"
   >
@@ -38,7 +38,6 @@
             <v-text-field
               density="compact"
               variant="outlined"
-              class=""
               placeholder="Insira seu e-mail"
               required
               :rules="[v => !!v || 'O e-mail é obrigatório!', rules.email]"
@@ -51,10 +50,10 @@
                   <v-text-field
                   density="compact"
                   variant="outlined"
-                  class=""
                   placeholder="Insira seu CPF"
                   required
                   type="number"
+                  hint="Digite sem pontos, apenas números"
                   :rules="[v => !!v || 'O CPF é obrigatório!', rules.cpf]"
                   v-model="newUser.document"
                   ></v-text-field>
@@ -67,9 +66,9 @@
                     class=""
                     placeholder="Insira seu telefone"
                     required
+                    hint="Digite sem espaços, com DDD na frente ex: 44000000000"
                     type="number"
-                    v-mask="'(##) #####-####'"
-                    :rules="[v => !!v || 'O telefone é obrigatório!']"
+                    :rules="[v => !!v || 'O telefone é obrigatório!', rules.phone_number]"
                     v-model="newUser.phone_number"
                     ></v-text-field>
                 </v-col>
@@ -165,7 +164,7 @@ const rules = ref({
     const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return pattern.test(value) || 'E-mail inválido!.'
   },
-    cpf: value => {
+  cpf: value => {
     const pattern = /^[0-9]{11}$/
     return pattern.test(value) || 'Invalid CPF.'
   },
@@ -176,12 +175,17 @@ const rules = ref({
   password: value => {
     return value.length >= 8 || 'A senha deve ter pelo menos 8 caracteres!'
   },
+  phone_number: value => {
+    const pattern = /^[1-9]{2}[0-9]{9}$/
+    return pattern.test(value) || 'O telefone deve ter 13 números!'
+  }
 })
 
 const snackbar = ref({
   visible: false,
   label: '',
-  color: ''
+  color: '',
+  time: ''
 })
 
 const newUser = ref({
@@ -209,16 +213,34 @@ const register = async () => {
     try {
       const response = await createRegister(payload)
       loading.value = false
-      snackbar.value.visible = true
-      snackbar.value.label = 'Usuário criado com sucesso!'
-      snackbar.value.color = '#00B8C5'
+      snackbar.value ={
+        visible: true,
+        label: 'Usuário criado com sucesso!',
+        color: '#00B8C5',
+        time: 5000
+      } 
+      if (response.data.token) {
+        useTimeoutFn(() => {
+          emit('login-page', true)
+        }, 3000)
+      } else {
+        snackbar.value ={
+          visible: true,
+          label: `${response.message}, ${response.data?.email?.[0] || '' } ${response.data?.document?.[0] || '' }`,
+          color: 'red',
+          time: 11000
+        }
+      }
       return response
     }
     catch(error) {
+      console.error("Error:", error)
       loading.value = false
-      snackbar.value.visible = true
-      snackbar.value.label = 'Erro ao criar usuário!'
-      snackbar.value.color = 'red'
+      snackbar.value ={
+        visible: true,
+        label: 'Erro ao criar usuário!',
+        color: 'red'
+      }
       console.error(error)
     }
   }
